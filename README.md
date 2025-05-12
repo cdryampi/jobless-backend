@@ -49,6 +49,7 @@ backend/
 ```bash
 python -m venv venv
 source venv/bin/activate
+.\venv\Scripts\activate
 ```
 
 2. Instalar dependencias:
