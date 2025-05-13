@@ -48,6 +48,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     # Apps internas
     'core',
+    'api',
     'multimedia_manager',
     'base_user',
     'django_ckeditor_5',
