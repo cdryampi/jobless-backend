@@ -10,7 +10,7 @@ def filter_logo_queryset(model_name, model_id=None, user=None):
     - El usuario autenticado (`user`).
     """
     if not user or not user.is_authenticated:
-        print("El usuario no está autenticado. Retornando queryset vacío.")
+        logger.warning("El usuario no está autenticado. Retornando queryset vacío.")
         return MediaFile.objects.none()
 
     # Define los campos relacionados para cada modelo

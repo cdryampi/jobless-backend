@@ -95,12 +95,14 @@ class CustomUserAdmin(UserAdmin):
     def save_model(self, request, obj, form, change):
         """
         Establece permisos especiales según el rol del usuario al guardar.
+        Combina la lógica de las dos definiciones previas de save_model.
         """
         if obj.role == 'guest':
-            obj.is_staff = True  # Permitir acceso al admin
+            obj.is_staff = True  # Permitir acceso al admin para usuarios 'guest'
         elif obj.role == 'admin':
             obj.is_staff = True
-            obj.is_superuser = True  # Solo si deseas que todos los administradores sean superusuarios
+            obj.is_superuser = True  # Convertir en superusuario si el rol es 'admin'
+        # Agregar cualquier lógica adicional aquí si es necesario
         super().save_model(request, obj, form, change)
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
@@ -148,10 +150,10 @@ class UserProfileAdmin(admin.ModelAdmin):
         obj.modificado_por = request.user  # Al modificar la imagen
         
         
-        if not obj.pk and UserProfile.objects.exists():
+        if not obj.pk and UserProfile.objects.filter(user=obj.user).exists():
             self.message_user(
                 request,
-                'Ya existe una instancia de UserProfile. No se pueden crear múltiples instancias.',
+                f'El usuario {obj.user} ya tiene un perfil asociado. No se pueden crear múltiples perfiles para el mismo usuario.',
                 level='error'
             )
             return  # Evitar guardar el objeto
