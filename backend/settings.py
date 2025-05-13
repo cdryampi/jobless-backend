@@ -34,6 +34,9 @@ ALLOWED_HOSTS = [
     host.strip() for host in allowed_hosts if host.strip()  # Filtrar hosts vacíos
 ]
 
+# Custom User Model
+AUTH_USER_MODEL = 'base_user.CustomUser'
+
 # Application definition
 
 INSTALLED_APPS = [
@@ -46,10 +49,12 @@ INSTALLED_APPS = [
     # Apps internas
     'core',
     'multimedia_manager',
+    'base_user',
     'django_ckeditor_5',
 
     # Dependencias externas
     'rest_framework',
+    'rest_framework.authtoken',
     'corsheaders',
 ]
 
@@ -140,3 +145,41 @@ MEDIA_URL = '/media/'
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+CKEDITOR_5_CONFIGS = {
+    'default': {
+        'toolbar': ['undo', 'redo', '|', 'heading', '|', 'bold', 'italic', 'strikethrough', 'underline', 'link', 'bulletedList', 'numberedList', '|', 'outdent', 'indent', '|', 'blockQuote', 'insertTable', 'mediaEmbed', 'imageUpload', '|', 'removeFormat', 'sourceEditing'],
+        'image': {
+            'toolbar': ['imageTextAlternative', '|', 'imageStyle:inline', 'imageStyle:block', 'imageStyle:side']
+        },
+        'table': {
+            'contentToolbar': ['tableColumn', 'tableRow', 'mergeTableCells']
+        },
+        'simpleUpload': {
+            'uploadUrl': 'URL_TO_YOUR_UPLOAD_ENDPOINT',  # Asegúrate de configurar un endpoint para la carga de imágenes
+            'headers': {
+                'X-CSRFToken': 'CSRF_TOKEN'  # Usar el token CSRF correcto aquí
+            }
+        },
+        'height': '400px',
+        'width': 'auto',
+    },
+    'extends': {
+        'toolbar': ['heading', '|', 'bold', 'italic', 'link', 'bulletedList', 'numberedList', '|', 'blockQuote', 'CKFinder', 'imageUpload', 'undo', 'redo'],
+        'image': {
+            'toolbar': ['imageStyle:full', 'imageStyle:side', '|', 'imageTextAlternative']
+        },
+        'ckfinder': {
+            'uploadUrl': '/ckfinder_connector/',  # Asegúrate de configurar correctamente la URL de subida
+        },
+        'height': '400px',
+        'width': 'auto',
+        'extraPlugins': ','.join([
+            'uploadimage',  # Permite la subida de imágenes
+            'divarea',      # Mejora la edición de la estructura del documento
+            'ckeditor_wiris'  # Plugin para fórmulas matemáticas, si es necesario
+        ]),
+    }
+}
+CKEDITOR_5_FILE_STORAGE = "django.core.files.storage.FileSystemStorage"
+CKEDITOR_5_UPLOADS_PATH = "uploads/"

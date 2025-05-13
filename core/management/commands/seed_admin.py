@@ -1,56 +1,75 @@
 from django.core.management.base import BaseCommand
-from django.contrib.auth.models import User
+from base_user.models import CustomUser, UserProfile
+import json
+from pathlib import Path
+
 
 class Command(BaseCommand):
-    help = 'Crea el superusuario y varios usuarios con distintos roles de ejemplo'
+    help = 'Crea el superusuario y varios usuarios con perfiles desde JSON'
 
     def handle(self, *args, **options):
-        # Superusuario
-        admin, created = User.objects.get_or_create(
-            username='admin',
-            defaults={
-                'email': 'admin@example.com',
-                'is_superuser': True,
-                'is_staff': True
-            }
+        base_path = Path(__file__).resolve().parent
+        json_path = base_path / "initial_profiles.json"
+        self.stdout.write(
+            self.style.SUCCESS(f"Eliminando todos los datos de la Base de Datos")
         )
-        if created:
-            admin.set_password('admin123')
-            admin.save()
-            self.stdout.write(self.style.SUCCESS('🧠 Superusuario creado: admin / admin123'))
-        else:
-            self.stdout.write(self.style.WARNING('🧠 Superusuario ya existe: admin'))
-
-        # Staff (no superuser)
-        staff, created = User.objects.get_or_create(
-            username='staff',
-            defaults={'email': 'staff@example.com'}
+        CustomUser.objects.all().delete()
+        UserProfile.objects.all().delete()
+        self.stdout.write(
+            self.style.SUCCESS(f"Todos los datos de la Base de Datos han sido eliminados")
         )
-        if created:
-            staff.set_password('staff123')
-            staff.is_staff = True
-            staff.save()
-            self.stdout.write(self.style.SUCCESS('👔 Usuario staff creado: staff / staff123'))
+        try:
+            with open(json_path, "r", encoding="utf-8") as f:
+                perfiles = json.load(f)
+        except FileNotFoundError:
+            self.stdout.write(self.style.ERROR(f"❌ Archivo JSON no encontrado en {json_path}"))
+            return
 
-        # Usuario activo común
-        user, created = User.objects.get_or_create(
-            username='user',
-            defaults={'email': 'user@example.com'}
-        )
-        if created:
-            user.set_password('user123')
-            user.save()
-            self.stdout.write(self.style.SUCCESS('🧍 Usuario común creado: user / user123'))
+        for username, profile_data in perfiles.items():
+            user, created = CustomUser.objects.get_or_create(
+                username=username,
+                defaults={
+                    'email': f'{username}@example.com',
+                    'is_staff': username in ['admin', 'staff'],
+                    'is_superuser': username == 'admin',
+                }
+            )
 
-        # Usuario no activo
-        disabled, created = User.objects.get_or_create(
-            username='disabled',
-            defaults={'email': 'disabled@example.com'}
-        )
-        if created:
-            disabled.set_password('disabled123')
-            disabled.is_active = False
-            disabled.save()
-            self.stdout.write(self.style.SUCCESS('🚫 Usuario desactivado creado: disabled / disabled123'))
+            if created:
+                user.set_password(f'{username}123')
+                user.save()
+                self.stdout.write(self.style.SUCCESS(f'✅ Usuario creado: {username} / {username}123'))
+            else:
+                self.stdout.write(self.style.WARNING(f'⚠️ Usuario ya existía: {username}'))
 
-        self.stdout.write(self.style.SUCCESS('✅ Usuarios iniciales generados.'))
+            profile, p_created = UserProfile.objects.get_or_create(
+                user=user,
+                defaults={
+                    'nombre': profile_data.get('nombre', ''),
+                    'apellido': profile_data.get('apellido', ''),
+                    'correo_electronico': user.email,
+                    'profesion': profile_data.get('profesion', 'estudiante'),
+                    'ciudad': profile_data.get('ciudad', ''),
+                    'edad': profile_data.get('edad', 0),
+                    'disponibilidad': profile_data.get('disponibilidad', ''),
+                    'resumen_habilidades': profile_data.get('resumen_habilidades', ''),
+                    'descripcion': profile_data.get('descripcion', ''),
+                }
+            )
+
+            if profile:
+                profile.nombre = profile_data.get('nombre', '')
+                profile.apellido = profile_data.get('apellido', '')
+                profile.correo_electronico = user.email
+                profile.profesion = profile_data.get('profesion', 'estudiante')
+                profile.ciudad = profile_data.get('ciudad', '')
+                profile.edad = profile_data.get('edad', 0)
+                profile.disponibilidad = profile_data.get('disponibilidad', '')
+                profile.resumen_habilidades = profile_data.get('resumen_habilidades', '')
+                profile.descripcion = profile_data.get('descripcion', '')
+                profile.save()
+                self.stdout.write(self.style.SUCCESS(f'🧾 Perfil actualizado para {username}'))
+            else:
+                self.stdout.write(self.style.WARNING(f'🧾 Perfil creado para {username}'))
+
+        self.stdout.write(self.style.SUCCESS('🎉 Usuarios y perfiles iniciales generados.'))
