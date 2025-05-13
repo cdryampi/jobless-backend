@@ -141,7 +141,8 @@ class UserProfile(models.Model):
         return f"{self.nombre} {self.apellido}"
     @property
     def get_profesion(self):
-        return self.PROFESIONES.get(self.profesion,'Aún no tiene profesión')
+        profesiones_dict = dict(self.PROFESIONES)
+        return profesiones_dict.get(self.profesion, 'Aún no tiene profesión')
     @classmethod
     def load(cls):
         obj, created = cls.objects.get_or_create(user_id=1)
