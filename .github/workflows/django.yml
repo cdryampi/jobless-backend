@@ -46,8 +46,7 @@ jobs:
       - name: 📦 Compilar archivos estáticos
         run: |
           python manage.py collectstatic --noinput
-
-      # (Opcional) 🧪 Agregar tests más adelante
-      # - name: 🔬 Correr tests
-      #   run: |
-      #     python manage.py test
+      # 🧪 Pasar los tests
+      - name: 🔬 Correr tests
+        run: |
+          python manage.py test

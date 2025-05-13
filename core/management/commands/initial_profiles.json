@@ -1,0 +1,43 @@
+{
+    "admin": {
+      "nombre": "Admin",
+      "apellido": "Root",
+      "profesion": "admin",
+      "ciudad": "Matrix",
+      "edad": 35,
+      "disponibilidad": "Siempre disponible",
+      "resumen_habilidades": "Admin experto en backend y control del universo.",
+      "descripcion": "El que todo lo ve y todo lo puede."
+    },
+    "staff": {
+      "nombre": "Staff",
+      "apellido": "Persona",
+      "profesion": "profesor",
+      "ciudad": "Barcelona",
+      "edad": 42,
+      "disponibilidad": "Part-time",
+      "resumen_habilidades": "Gran habilidad para explicar lo inexplicable.",
+      "descripcion": "Usuario con permisos de staff y conocimiento infinito."
+    },
+    "user": {
+      "nombre": "User",
+      "apellido": "Uno",
+      "profesion": "estudiante",
+      "ciudad": "Madrid",
+      "edad": 22,
+      "disponibilidad": "Horario lectivo",
+      "resumen_habilidades": "Aprendiz rápido.",
+      "descripcion": "Usuario regular del sistema para pruebas."
+    },
+    "disabled": {
+      "nombre": "Ghost",
+      "apellido": "Invisible",
+      "profesion": "desempleado",
+      "ciudad": "Valencia",
+      "edad": 28,
+      "disponibilidad": "Nula",
+      "resumen_habilidades": "No responde.",
+      "descripcion": "Usuario desactivado para pruebas de lógica."
+    }
+  }
+  
