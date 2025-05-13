@@ -150,10 +150,10 @@ class UserProfileAdmin(admin.ModelAdmin):
         obj.modificado_por = request.user  # Al modificar la imagen
         
         
-        if not obj.pk and UserProfile.objects.exists():
+        if not obj.pk and UserProfile.objects.filter(user=obj.user).exists():
             self.message_user(
                 request,
-                'Ya existe una instancia de UserProfile. No se pueden crear múltiples instancias.',
+                f'El usuario {obj.user} ya tiene un perfil asociado. No se pueden crear múltiples perfiles para el mismo usuario.',
                 level='error'
             )
             return  # Evitar guardar el objeto
