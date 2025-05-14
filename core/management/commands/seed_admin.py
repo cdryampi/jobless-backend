@@ -1,4 +1,3 @@
-from os import name
 from django.core.management.base import BaseCommand
 from base_user.models import CustomUser, UserProfile
 import json
