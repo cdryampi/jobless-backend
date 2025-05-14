@@ -2,7 +2,13 @@ from django.core.management.base import BaseCommand
 from base_user.models import CustomUser, UserProfile
 import json
 from pathlib import Path
+from multimedia_manager.models import MediaFile, DocumentFile
+from django.core.files import File
 
+base_path = Path(__file__).resolve().parent
+fixtures_path = base_path / "fixtures"
+img_url = fixtures_path / "sample.jpg"
+pdf_url = fixtures_path / "sample.pdf"
 
 class Command(BaseCommand):
     help = 'Crea el superusuario y varios usuarios con perfiles desde JSON'
@@ -15,6 +21,8 @@ class Command(BaseCommand):
         )
         CustomUser.objects.all().delete()
         UserProfile.objects.all().delete()
+        MediaFile.objects.all().delete()
+        DocumentFile.objects.all().delete()
         self.stdout.write(
             self.style.SUCCESS(f"Todos los datos de la Base de Datos han sido eliminados")
         )
@@ -58,6 +66,14 @@ class Command(BaseCommand):
             )
 
             if profile:
+                with open(img_url, 'rb') as img_file:
+                    foto = MediaFile.objects.create(file=File(img_file, name="sample image"), title="sample image", creado_por=user)
+                
+                with open(pdf_url, 'rb') as pdf_file:
+                    cv = DocumentFile.objects.create(file=File(pdf_file, name="sample pdf"), title="sample pdf", creado_por=user)
+                
+                profile.foto = foto
+                profile.usuario_pdf = cv
                 profile.nombre = profile_data.get('nombre', '')
                 profile.apellido = profile_data.get('apellido', '')
                 profile.correo_electronico = user.email
@@ -67,6 +83,7 @@ class Command(BaseCommand):
                 profile.disponibilidad = profile_data.get('disponibilidad', '')
                 profile.resumen_habilidades = profile_data.get('resumen_habilidades', '')
                 profile.descripcion = profile_data.get('descripcion', '')
+
                 profile.save()
                 self.stdout.write(self.style.SUCCESS(f'🧾 Perfil actualizado para {username}'))
             else:
