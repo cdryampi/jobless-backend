@@ -2,6 +2,7 @@ from django.db import models
 from django_ckeditor_5.fields import CKEditor5Field
 from django.contrib.auth.models import AbstractUser
 from django.utils.translation import gettext_lazy as _
+from uuid import uuid4
 from django.conf import settings
 
 # Create your models here.
@@ -48,6 +49,7 @@ class UserProfile(models.Model):
         ('trabajador', 'Trabajador'),
         ('desempleado', 'Desempleado'),
     )
+    uuid = models.UUIDField(default=uuid4, unique=True, editable=False, primary_key=True)
     nombre = models.CharField(
         max_length=100,
         blank=True,
