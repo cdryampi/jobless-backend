@@ -13,4 +13,4 @@ def regenerar_los_uuids_perfiles()->None:
     for perfil in perfiles:
         perfil.uuid = generate_uuid()
         perfil.save()
-    print("✅ UUIDs regenerados para todos los perfiles")
+    logging.info("✅ UUIDs regenerados para todos los perfiles")
