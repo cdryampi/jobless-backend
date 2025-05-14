@@ -6,6 +6,7 @@ from core.admin.base_img_mixin import filter_logo_queryset
 from django.utils.translation import gettext_lazy as _
 from multimedia_manager.models import MediaFile, DocumentFile
 from django.utils.html import format_html
+from collections import Counter
 
 class CustomUserAdmin(UserAdmin):
     """
@@ -131,6 +132,16 @@ class UserProfileAdmin(admin.ModelAdmin):
     list_filter = ('profesion', 'ciudad')
     readonly_fields = ('user',)
     ordering = ('user',)
+    change_list_template = 'base_user/userprofile_change_list.html'
+    
+    def changelist_view(self, request, extra_context=None):
+        data = UserProfile.objects.values_list('profesion', flat=True)
+        counter = dict(Counter(data))
+
+        extra_context = extra_context or {}
+        extra_context['labels'] = list(counter.keys())
+        extra_context['values'] = list(counter.values())
+        return super().changelist_view(request, extra_context=extra_context)
 
 
     def user_link(self, obj):
