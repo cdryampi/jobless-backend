@@ -1,3 +1,4 @@
+import uuid
 from base_user.serializers import UserProfileSerializer
 from base_user.models import UserProfile
 from rest_framework import viewsets, status
@@ -17,13 +18,13 @@ class UserProfilesViewSet(viewsets.ViewSet):
         Retorna un perfil de usuario específico.
         
         Parámetros:
-        - pk: ID del perfil a obtener (obligatorio)
+        - uuid: ID del perfil a obtener (obligatorio)
         
         Respuestas:
         - 200: Perfil encontrado
         - 404: Perfil no encontrado
         """
-        profile = get_object_or_404(UserProfile, pk=pk)
+        profile = get_object_or_404(UserProfile, uuid=pk)
         return Response(UserProfileSerializer(profile).data)
     
     def list(self, request):
@@ -39,8 +40,8 @@ class UserProfilesViewSet(viewsets.ViewSet):
             page = int(request.query_params.get('page', 1))
             page_size = int(request.query_params.get('page_size', 10))
             
-            # Obtener todos los perfiles ordenados por id descendente
-            profiles = UserProfile.objects.all().order_by('-id')
+            # Obtener todos los perfiles ordenados por nombre ascendente
+            profiles = UserProfile.objects.all().order_by('nombre')
             
             # Crear paginador
             paginator = Paginator(profiles, page_size)
