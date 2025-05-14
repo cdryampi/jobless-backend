@@ -1,4 +1,3 @@
-from os import name
 from django.core.management.base import BaseCommand
 from base_user.models import CustomUser, UserProfile
 import json
@@ -68,15 +67,11 @@ class Command(BaseCommand):
 
             if profile:
                 with open(img_url, 'rb') as img_file:
-                    foto = MediaFile.objects.create(file=File(img_file, name="sample image"), title="sample image")
+                    foto = MediaFile.objects.create(file=File(img_file, name="sample image"), title="sample image", creado_por=user)
                 
                 with open(pdf_url, 'rb') as pdf_file:
-                    cv = DocumentFile.objects.create(file=File(pdf_file, name="sample pdf"), title="sample pdf")
+                    cv = DocumentFile.objects.create(file=File(pdf_file, name="sample pdf"), title="sample pdf", creado_por=user)
                 
-                foto.creado_por = user
-                foto.save()
-                cv.creado_por = user
-                cv.save()
                 profile.foto = foto
                 profile.usuario_pdf = cv
                 profile.nombre = profile_data.get('nombre', '')

@@ -40,7 +40,8 @@ class UserTokenTest(TestCase):
         """
         Verifica que al crear un usuario, su perfil también se cree automáticamente.
         """
-        user = User.objects.create_user(username="testuser2", password="testpassword")
+        import uuid
+        user = User.objects.create_user(username=f"testuser2_{uuid.uuid4().hex}", password="testpassword")
         profile = UserProfile.objects.get(user=user)
         with open(img_url, 'rb') as img_file:
             media = MediaFile.objects.create(file=File(img_file, name="test media"), title="test media")
