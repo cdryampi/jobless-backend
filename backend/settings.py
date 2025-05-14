@@ -40,6 +40,7 @@ AUTH_USER_MODEL = 'base_user.CustomUser'
 # Application definition
 
 INSTALLED_APPS = [
+    'jazzmin',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -184,3 +185,23 @@ CKEDITOR_5_CONFIGS = {
 }
 CKEDITOR_5_FILE_STORAGE = "django.core.files.storage.FileSystemStorage"
 CKEDITOR_5_UPLOADS_PATH = "uploads/"
+
+JAZZMIN_SETTINGS = {
+    "site_title": "Jobless Admin",
+    "site_header": "Panel de Administración",
+    "site_brand": "Jobless",
+    "welcome_sign": "Bienvenido al Jobless Dashboard",
+    "copyright": "Inkor",
+    "show_sidebar": True,
+    "navigation_expanded": True,
+    "hide_apps": [],
+    "icons": {
+        "base_user.CustomUser": "fas fa-user-shield",
+        "base_user.UserProfile": "fas fa-id-card",
+        "multimedia_manager.MediaFile": "fas fa-image",
+        "multimedia_manager.DocumentFile": "fas fa-file-pdf",
+    },
+}
+JAZZMIN_UI_TWEAKS = {
+    "theme": "lux"
+}

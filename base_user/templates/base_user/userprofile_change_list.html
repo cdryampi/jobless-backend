@@ -1,0 +1,82 @@
+{% extends "admin/change_list.html" %}
+{% load static %}
+
+{% block content %}
+<div class="container mt-5 justify-content-center">
+    <h2 style="color: #ff5555;">Perfiles por Profesión — como si eso importara</h2>
+
+    <p style="font-style: italic; color: #999; margin-bottom: 20px;">
+    El sistema recopila estos datos... pero todos terminan igual. La profesión es solo otra ilusión del ego.
+</p>
+
+<!-- Chart container -->
+<div style="width: 70%; margin-bottom: 2em; background-color: #1e1e1e; padding: 20px; border-radius: 10px;">
+  <canvas id="profesionChart" width="400" height="200"></canvas>
+</div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+  const ctx = document.getElementById('profesionChart').getContext('2d');
+  const chart = new Chart(ctx, {
+      type: 'bar',
+      data: {
+          labels: {{ labels|safe }},
+          datasets: [{
+              label: 'Cantidad de perfiles — todos irrelevantes',
+              data: {{ values|safe }},
+              backgroundColor: '#ff5555',
+              borderColor: '#ff5555',
+              borderWidth: 1
+          }]
+      },
+      options: {
+          responsive: true,
+          scales: {
+              y: {
+                  beginAtZero: true,
+                  ticks: {
+                      color: '#ccc'
+                  },
+                  title: {
+                      display: true,
+                      text: 'Cantidad... pero, ¿para qué?',
+                      color: '#aaa'
+                  }
+              },
+              x: {
+                  ticks: {
+                      color: '#ccc'
+                  }
+              }
+          },
+          plugins: {
+              legend: {
+                  display: false
+              },
+              tooltip: {
+                  callbacks: {
+                      label: function(context) {
+                          return ` ${context.raw} humanos atrapados en esta categoría`;
+                      }
+                  }
+              },
+              title: {
+                  display: true,
+                  text: 'Nada tiene sentido, pero aquí están tus datos',
+                  color: '#ff5555',
+                  font: {
+                      size: 16
+                  }
+              }
+          }
+      }
+  });
+</script>
+
+<!-- Original changelist table -->
+{{ block.super }}
+
+<div style="margin-top: 40px; text-align: center; font-size: 0.9em; color: #666;">
+  Este gráfico fue generado por un sistema que algún día dejará de existir.
+</div>
+{% endblock %}
