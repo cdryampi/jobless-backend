@@ -5,6 +5,10 @@ from .models import UserProfile
 from pathlib import Path
 from multimedia_manager.models import MediaFile, DocumentFile
 from django.core.files import File
+from rest_framework.test import APIClient
+from django.contrib.auth.models import Group
+
+
 
 base_path = Path(__file__).resolve().parent.parent # raiz del proyecto jobless-backend
 fixtures_path = base_path / "core" / "management" / "commands" / "fixtures"
@@ -68,3 +72,53 @@ class UserTokenTest(TestCase):
 
         self.assertIsNotNone(profile.usuario_pdf)
         print(f"✔ DocumentFile generado correctamente para {user.username}")
+
+class UserAuthTests(TestCase):
+    def setUp(self):
+        self.client = APIClient()
+        # Crear el grupo de Guest necesario para la prueba o no funcionará porque el serializer lo asigna automáticamente al usuario.
+        # Esto es necesario porque el signal de creación de usuario asigna grupos automáticamente.
+        # Si el grupo ya existe, no se creará de nuevo.
+        self.guest_group, _ = Group.objects.get_or_create(name='Guest')
+        self.guest_group.permissions.set(Group.objects.get(name='Guest').permissions.all())
+        self.guest_group.save()
+
+        # Crear un usuario de prueba
+        self.user = User.objects.create_user(
+            username="uuiduser",
+            password="123456",
+            email="uuiduser@example.com"
+        )
+        self.token = Token.objects.get(user=self.user)
+        self.profile = self.user.user_profile  # creado por signal
+        self.client.credentials(HTTP_AUTHORIZATION='Token ' + self.token.key)
+
+    def test_registro_usuario_y_creacion_perfil(self):
+        """
+        Verifica que al registrar un usuario se cree perfil y token automáticamente.
+        """
+        data = {
+            "username": "usuario_guest",
+            "email": "guest@example.com",
+            "password": "test1234",
+            "password2": "test1234"
+        }
+        response = self.client.post('/api/register/', data)
+        self.assertEqual(response.status_code, 201)
+
+        user = User.objects.get(username="usuario_guest")
+        self.assertTrue(UserProfile.objects.filter(user=user).exists())
+
+        token = Token.objects.get(user=user)
+        self.assertIsNotNone(token.key)
+
+    def test_obtener_perfil_por_uuid(self):
+        """
+        Verifica que se puede acceder al perfil de usuario vía su UUID.
+        """
+        url = f'/api/userprofiles/{self.profile.uuid}/'
+        response = self.client.get(url)
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.data['uuid'], str(self.profile.uuid))
+        self.assertEqual(response.data['user'], self.user.id)
