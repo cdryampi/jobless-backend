@@ -22,12 +22,12 @@ def create_or_update_user_profile(sender, instance, created, **kwargs):
             admin_group, _ = Group.objects.get_or_create(name='Admin')
             # Asignar el grupo al usuario
             instance.groups.add(admin_group)
-        elif instance.role == 'guest':
+        else:
             # Crear o recuperar el grupo "Guest"
             guest_group, _ = Group.objects.get_or_create(name='Guest')
             # Asignar el grupo al usuario
             instance.groups.add(guest_group)
-
+        
 @receiver(post_save, sender=CustomUser)
 def create_auth_token(sender, instance, created, **kwargs):
     """
