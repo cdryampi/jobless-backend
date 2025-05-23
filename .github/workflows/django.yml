@@ -41,7 +41,7 @@ jobs:
       # 🧪 Cargar datos de prueba
       - name: Agregar datos de prueba
         run: |
-          python manage.py seed_admin
+          python manage.py seed_data
       # compilar los archivos estáticos
       - name: 📦 Compilar archivos estáticos
         run: |

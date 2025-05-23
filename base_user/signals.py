@@ -22,17 +22,11 @@ def create_or_update_user_profile(sender, instance, created, **kwargs):
             admin_group, _ = Group.objects.get_or_create(name='Admin')
             # Asignar el grupo al usuario
             instance.groups.add(admin_group)
-            # Asignar todos los permisos del grupo al usuario
-            for perm in admin_group.permissions.all():
-                instance.user_permissions.add(perm)
         elif instance.role == 'guest':
             # Crear o recuperar el grupo "Guest"
             guest_group, _ = Group.objects.get_or_create(name='Guest')
             # Asignar el grupo al usuario
             instance.groups.add(guest_group)
-            # Asignar permisos básicos al grupo
-            basic_perms = Permission.objects.filter(codename__in=['view_customuser', 'view_userprofile'])
-            guest_group.permissions.set(basic_perms)
 
 @receiver(post_save, sender=CustomUser)
 def create_auth_token(sender, instance, created, **kwargs):

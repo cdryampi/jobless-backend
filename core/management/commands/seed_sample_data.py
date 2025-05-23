@@ -4,6 +4,7 @@ import json
 from pathlib import Path
 from multimedia_manager.models import MediaFile, DocumentFile
 from django.core.files import File
+from django.core.management import call_command
 
 base_path = Path(__file__).resolve().parent
 fixtures_path = base_path / "fixtures"
@@ -17,14 +18,7 @@ class Command(BaseCommand):
         base_path = Path(__file__).resolve().parent
         json_path = base_path / "initial_profiles.json"
         self.stdout.write(
-            self.style.SUCCESS(f"Eliminando todos los datos de la Base de Datos")
-        )
-        CustomUser.objects.all().delete()
-        UserProfile.objects.all().delete()
-        MediaFile.objects.all().delete()
-        DocumentFile.objects.all().delete()
-        self.stdout.write(
-            self.style.SUCCESS(f"Todos los datos de la Base de Datos han sido eliminados")
+            self.style.SUCCESS(f"Creando usuarios y perfiles desde el archivo JSON")
         )
         try:
             with open(json_path, "r", encoding="utf-8") as f:

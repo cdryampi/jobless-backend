@@ -34,11 +34,7 @@ class CustomUserAdmin(UserAdmin):
     fieldsets = (
         (None, {'fields': ('username', 'password')}),
         (_('Personal info'), {'fields': ('first_name', 'last_name', 'email', 'profile_image')}),
-        (_('Permissions'), {
-            'fields': ('is_active', 'groups', 'user_permissions'),
-        }),
         (_('Important dates'), {'fields': ('last_login', 'date_joined')}),
-        (_('Additional info'), {'fields': ('role',)}),
     )
     add_fieldsets = (
         (None, {
@@ -221,10 +217,12 @@ class UserProfileAdmin(admin.ModelAdmin):
 
     def has_change_permission(self, request, obj=None):
         """
-        Verifica que los administradores solo puedan cambiar su propio perfil.
+        Verifica que los administradores solo puedan cambiar su propio perfil y los guest si es su propio perfil.
         """
         if obj is not None and obj.user != request.user:
             return False
+        if obj is not None and obj.user == request.user and obj.user.role == 'guest':
+            return True
         return super().has_change_permission(request, obj)
 
     def has_delete_permission(self, request, obj=None):

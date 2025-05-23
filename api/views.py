@@ -1,11 +1,11 @@
-import uuid
-from base_user.serializers import UserProfileSerializer
-from base_user.models import UserProfile
-from rest_framework import viewsets, status
+from base_user.serializers import UserProfileSerializer, CustomUserSerializer
+from base_user.models import UserProfile, CustomUser
+from rest_framework import viewsets, status, generics
 from rest_framework.response import Response
 from django.core.paginator import Paginator
 from django.shortcuts import get_object_or_404
 from rest_framework.decorators import action
+from rest_framework.authtoken.models import Token
 
 class UserProfilesViewSet(viewsets.ViewSet):
     """
@@ -85,3 +85,25 @@ class UserProfilesViewSet(viewsets.ViewSet):
                 {'error': f'Error al obtener todos los perfiles: {str(e)}'},
                 status=status.HTTP_500_INTERNAL_SERVER_ERROR
             )
+
+class CustomUserView(generics.CreateAPIView):
+    """
+    API endpoint para registrar nuevos usuarios.
+    """
+    queryset = CustomUser.objects.all()
+    serializer_class = CustomUserSerializer
+
+    def create(self, request, *args, **kwargs):
+        """
+        Crea un nuevo usuario con validación completa.
+        Devuelve también el token de autenticación.
+        """
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        user = serializer.save()
+        token, _ = Token.objects.get_or_create(user=user)
+
+        return Response({
+            "user": CustomUserSerializer(user).data,
+            "token": token.key,
+        }, status=status.HTTP_201_CREATED)
