@@ -22,7 +22,7 @@ def create_or_update_user_profile(sender, instance, created, **kwargs):
             admin_group, _ = Group.objects.get_or_create(name='Admin')
             # Asignar el grupo al usuario
             instance.groups.add(admin_group)
-        else:
+        elif instance.role == 'guest':
             # Crear o recuperar el grupo "Guest"
             guest_group, _ = Group.objects.get_or_create(name='Guest')
             # Asignar el grupo al usuario
