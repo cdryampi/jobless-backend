@@ -16,7 +16,7 @@ python manage.py migrate
 
 # 4. Crear superusuario y usuarios de prueba
 echo "👤 Creando usuarios administrativos y de prueba..."
-python manage.py seed_admin
+python manage.py seed_data
 
 # 5. Ficheros estaticos
 echo "📂 Recopilando ficheros estáticos..."
